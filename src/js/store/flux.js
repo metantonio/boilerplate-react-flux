@@ -1,3 +1,6 @@
+const BASE_URL = process.env.BASE_URL;
+
+
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
@@ -12,7 +15,14 @@ const getState = ({ getStore, getActions, setStore }) => {
 					background: "white",
 					initial: "white"
 				}
-			]
+			],
+			user: {
+				username: "",
+				id: 0,
+				password:"",
+				nombre:""
+			},
+			users:[]
 		},
 		actions: {
 			// Use getActions to call a function within a fuction
@@ -24,20 +34,22 @@ const getState = ({ getStore, getActions, setStore }) => {
 					fetch().then().then(data => setStore({ "foo": data.bar }))
 				*/
 			},
-			changeColor: (index, color) => {
-				//get the store
-				const store = getStore();
-
-				//we have to loop the entire demo array to look for the respective index
-				//and change its color
-				const demo = store.demo.map((elm, i) => {
-					if (i === index) elm.background = color;
-					return elm;
-				});
-
-				//reset the global store
-				setStore({ demo: demo });
+			getUsers: async () => {
+				let store = getStore();
+				try {
+					console.log(BASE_URL);
+					let response = await fetch(`${BASE_URL}/users`);
+					let listUsers = await response.json();
+					console.log(listUsers);
+					setStore({users: listUsers});
+					return store.users;
+				} catch (error) {
+					console.log(error);
+				}
+				
+				return true;
 			}
+
 		}
 	};
 };
